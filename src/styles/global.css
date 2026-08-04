@@ -1,0 +1,138 @@
+/* =========================================================
+   DESIGN TOKENS
+   Inspired by Sylhet's landscape: tea-garden greens, the
+   turquoise water of Lalakhal, and hillside sunrise gold.
+   ========================================================= */
+:root {
+  /* Color */
+  --color-bg: #F5F7F1;         /* misty tea-garden morning */
+  --color-surface: #FFFFFF;
+  --color-forest: #1B4332;     /* deep tea leaf - headers/nav */
+  --color-moss: #40916C;       /* mid green - hover/secondary */
+  --color-river: #2C6E7F;      /* Lalakhal blue-teal - links */
+  --color-sun: #E9B44C;        /* hillside sunrise gold - CTA */
+  --color-ink: #1F2A24;        /* near-black, green-tinted text */
+  --color-ink-soft: #566B60;
+  --color-border: #DCE3D8;
+
+  /* Type */
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Work Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  /* Layout */
+  --radius: 10px;
+  --max-width: 1180px;
+  --shadow-soft: 0 8px 24px rgba(27, 67, 50, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--color-forest);
+  margin: 0;
+  line-height: 1.15;
+}
+
+p { line-height: 1.6; color: var(--color-ink-soft); }
+
+a { color: var(--color-river); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+img { max-width: 100%; display: block; }
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:focus-visible { outline: 3px solid var(--color-river); outline-offset: 2px; }
+
+.btn-primary {
+  background: var(--color-sun);
+  color: var(--color-forest);
+}
+.btn-primary:hover { box-shadow: 0 6px 16px rgba(233, 180, 76, 0.45); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-forest);
+  border: 1.5px solid var(--color-forest);
+}
+.btn-outline:hover { background: var(--color-forest); color: white; }
+
+/* ---- Forms (shared by Login/Register) ---- */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.form-field label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--color-border);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: var(--color-surface);
+}
+.form-field input:focus,
+.form-field select:focus,
+.form-field textarea:focus {
+  outline: none;
+  border-color: var(--color-river);
+}
+
+.form-error {
+  background: #FBEAEA;
+  color: #A23B3B;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+/* ---- Signature divider: hillside contour line ----
+   A recurring wavy rule between homepage sections, standing
+   in for Sylhet's layered hills instead of a plain hairline. */
+.hill-divider {
+  width: 100%;
+  height: 32px;
+  display: block;
+}

@@ -142,3 +142,52 @@ INSERT INTO destinations (name, category, description, image, entry_fee) VALUES
 -- Note: An admin account is created through the seed script (see
 -- backend/config/seedAdmin.js) so the password is hashed properly
 -- instead of stored as plain text here.
+
+-- =========================================================
+-- MIGRATION: Payments & Receipts
+-- Added for the sandbox payment flow. Purely additive -
+-- existing tables, data and relationships are untouched.
+-- Safe to re-run: guarded with IF NOT EXISTS / ALTER checks
+-- where MySQL supports it.
+-- =========================================================
+
+-- ---------------------------------------------------------
+-- 9. Extend GUIDE_BOOKINGS with payment tracking
+-- `amount` is snapshotted at booking time (days * daily_charge)
+-- so a later change to a guide's rate never rewrites history.
+-- `status` gains 'Cancelled' for the tourist "Cancel Booking"
+-- action (only allowed while a booking is still 'Pending').
+-- ---------------------------------------------------------
+ALTER TABLE guide_bookings
+    ADD COLUMN amount DECIMAL(10,2) NOT NULL DEFAULT 0 AFTER days,
+    ADD COLUMN payment_status ENUM('Unpaid', 'Paid') NOT NULL DEFAULT 'Unpaid' AFTER status,
+    ADD COLUMN receipt_url VARCHAR(255) DEFAULT NULL AFTER payment_status,
+    MODIFY COLUMN status ENUM('Pending', 'Accepted', 'Rejected', 'Completed', 'Cancelled') DEFAULT 'Pending';
+
+-- ---------------------------------------------------------
+-- 10. Extend VEHICLE_BOOKINGS with payment tracking (mirrors above)
+-- ---------------------------------------------------------
+ALTER TABLE vehicle_bookings
+    ADD COLUMN amount DECIMAL(10,2) NOT NULL DEFAULT 0 AFTER days,
+    ADD COLUMN payment_status ENUM('Unpaid', 'Paid') NOT NULL DEFAULT 'Unpaid' AFTER status,
+    ADD COLUMN receipt_url VARCHAR(255) DEFAULT NULL AFTER payment_status,
+    MODIFY COLUMN status ENUM('Pending', 'Accepted', 'Rejected', 'Completed', 'Cancelled') DEFAULT 'Pending';
+
+-- ---------------------------------------------------------
+-- 11. PAYMENTS TABLE
+-- One row per successful (sandbox) payment. `booking_type`
+-- tells us whether `booking_id` points into guide_bookings or
+-- vehicle_bookings, since both share the payments table.
+-- ---------------------------------------------------------
+CREATE TABLE IF NOT EXISTS payments (
+    payment_id      INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id      INT NOT NULL,
+    booking_type    ENUM('guide', 'vehicle') NOT NULL,
+    user_id         INT NOT NULL,
+    amount          DECIMAL(10,2) NOT NULL,
+    payment_method  VARCHAR(50) NOT NULL DEFAULT 'Card (Sandbox)',
+    transaction_id  VARCHAR(100) NOT NULL UNIQUE,
+    payment_status  ENUM('Success', 'Failed') NOT NULL DEFAULT 'Success',
+    payment_date    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
